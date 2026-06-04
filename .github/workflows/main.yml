@@ -1,0 +1,36 @@
+name: NeedFree Auto Monitor
+
+on:
+  schedule:
+    # Запуск каждые 30 минут (интервал по умолчанию для бесплатных серверов GitHub)
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # Позволяет запускать проверку вручную кнопкой
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Разрешение серверу обновлять файл истории
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Run checker script
+      env:
+        TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      run: node checker.js
+
+    - name: Commit and Push history changes
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git add last_count.txt
+        git commit -m "Update last checked games count [skip ci]" || exit 0
+        git push
