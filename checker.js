@@ -1,66 +1,44 @@
-const fs = require('fs');
-
-// Конфигурация уведомлений из секретов GitHub
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
-const TARGET_URL = 'https://github.io';
 
-async function sendTelegramMessage(text) {
+async function testBot() {
+    console.log("--- СТАРТ ТЕСТА СВЯЗИ С БОТОМ ---");
+    console.log(`Используемый ID чата: ${TELEGRAM_CHAT_ID}`);
+    // Показываем только часть токена в целях безопасности
+    console.log(`Используемый Токен (начало): ${TELEGRAM_TOKEN ? TELEGRAM_TOKEN.substring(0, 9) + '...' : 'НЕ НАЙДЕН'}`);
+
     const url = `https://telegram.org{TELEGRAM_TOKEN}/sendMessage`;
+    
     try {
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text, parse_mode: 'Markdown' })
+            body: JSON.stringify({ 
+                chat_id: TELEGRAM_CHAT_ID, 
+                text: "🚀 Привет! Если ты видишь это сообщение, значит связь между GitHub и ботом настроена идеально!" 
+            })
         });
+
         const result = await response.json();
-        if (!result.ok) {
-            console.error(`❌ Ошибка Telegram API: ${result.description}`);
+
+        if (result.ok) {
+            console.log("✅ УСПЕХ! Бот успешно отправил сообщение в Telegram.");
         } else {
-            console.log("✅ Уведомление успешно отправлено в Telegram!");
+            console.log("❌ ОШИБКА ОТ ТЕЛЕГРАМА:");
+            console.log(`Код ошибки: ${result.error_code}`);
+            console.log(`Описание: ${result.description}`);
+            
+            if (result.description.includes("bot was blocked")) {
+                console.log("👉 РЕШЕНИЕ: Вы забыли зайти в своего бота в Telegram и нажать кнопку СТАРТ.");
+            } else if (result.description.includes("chat not found")) {
+                console.log("👉 РЕШЕНИЕ: Неверно указан TELEGRAM_CHAT_ID. Перепроверьте его в @userinfobot. Там должны быть только цифры.");
+            } else if (result.description.includes("Not Found")) {
+                console.log("👉 РЕШЕНИЕ: Неверно указан TELEGRAM_TOKEN в Секретах. Вы скопировали его с ошибкой.");
+            }
         }
     } catch (e) {
-        console.error("❌ Сетевая ошибка при отправке в Telegram:", e);
+        console.log("❌ ОШИБКА СЕТИ:", e.message);
     }
 }
 
-
-async function run() {
-    try {
-        const response = await fetch(TARGET_URL);
-        const html = await response.text();
-        
-        // Извлекаем количество игр регулярным выражением
-        const match = html.match(/Total Count:\s*(\d+)/i);
-        const currentCount = match ? parseInt(match[1]) : null;
-
-        if (currentCount === null) {
-            console.log("Не удалось спарсить количество игр. Возможно, сайт временно недоступен.");
-            return;
-        }
-
-        console.log(`Текущее количество игр на сайте: ${currentCount}`);
-
-        const logFile = 'last_count.txt';
-        let previousCount = null;
-
-        if (fs.existsSync(logFile)) {
-            previousCount = parseInt(fs.readFileSync(logFile, 'utf8').trim());
-        }
-
-        // Если количество изменилось, отправляем уведомление в Telegram
-        if (previousCount !== null && currentCount !== previousCount) {
-            const message = `🚨 *Обновление на NeedFree!*\nКоличество бесплатных игр изменилось!\nБыло: ${previousCount} ➔ Стало: ${currentCount}\nСсылка: ${TARGET_URL}`;
-            await sendTelegramMessage(message);
-            console.log("Уведомление отправлено в Telegram!");
-        }
-
-        // Сохраняем новое значение для следующей проверки
-        fs.writeFileSync(logFile, currentCount.toString(), 'utf8');
-
-    } catch (error) {
-        console.error("Ошибка при выполнении скрипта:", error);
-    }
-}
-
-run();
+testBot();
