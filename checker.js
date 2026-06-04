@@ -8,15 +8,22 @@ const TARGET_URL = 'https://github.io';
 async function sendTelegramMessage(text) {
     const url = `https://telegram.org{TELEGRAM_TOKEN}/sendMessage`;
     try {
-        await fetch(url, {
+        const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text, parse_mode: 'Markdown' })
         });
+        const result = await response.json();
+        if (!result.ok) {
+            console.error(`❌ Ошибка Telegram API: ${result.description}`);
+        } else {
+            console.log("✅ Уведомление успешно отправлено в Telegram!");
+        }
     } catch (e) {
-        console.error("Ошибка отправки в Telegram:", e);
+        console.error("❌ Сетевая ошибка при отправке в Telegram:", e);
     }
 }
+
 
 async function run() {
     try {
