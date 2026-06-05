@@ -3,7 +3,7 @@ const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 async function testBot() {
     console.log("--- СТАРТ ТЕСТА СВЯЗИ С БОТОМ ---");
-    console.log(`Используемый ID чата: ${TELEGRAM_CHAT_ID}`);
+    console.log(`Используемый ID чата: ${7176155067}`);
     // Показываем только часть токена в целях безопасности
     console.log(`Используемый Токен (начало): ${TELEGRAM_TOKEN ? TELEGRAM_TOKEN.substring(0, 9) + '...' : 'НЕ НАЙДЕН'}`);
 
@@ -14,7 +14,7 @@ async function testBot() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                chat_id: TELEGRAM_CHAT_ID, 
+                chat_id: 7176155067, 
                 text: "🚀 Привет! Если ты видишь это сообщение, значит связь между GitHub и ботом настроена идеально!" 
             })
         });
