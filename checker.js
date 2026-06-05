@@ -5,9 +5,9 @@ async function testBot() {
     console.log("--- СТАРТ ТЕСТА СВЯЗИ С БОТОМ ---");
     console.log(`Используемый ID чата: ${7176155067}`);
     // Показываем только часть токена в целях безопасности
-    console.log(`Используемый Токен (начало): ${TELEGRAM_TOKEN ? TELEGRAM_TOKEN.substring(0, 9) + '...' : 'НЕ НАЙДЕН'}`);
+    console.log(`Используемый Токен (начало): ${8714352542:AAFiFba6tbQhr9NRlEIi-kJ8T4-647hpfrg ? 8714352542:AAFiFba6tbQhr9NRlEIi-kJ8T4-647hpfrg.substring(0, 9) + '...' : 'НЕ НАЙДЕН'}`);
 
-    const url = `https://telegram.org{TELEGRAM_TOKEN}/sendMessage`;
+    const url = `https://telegram.org{8714352542:AAFiFba6tbQhr9NRlEIi-kJ8T4-647hpfrg}/sendMessage`;
     
     try {
         const response = await fetch(url, {
